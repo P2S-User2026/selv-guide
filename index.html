@@ -1,0 +1,472 @@
+<!doctype html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-BwkttOTacI+f/qCBVIYNoGLyFW1y+upcMqmh9djYeaA='; style-src 'unsafe-inline'; img-src 'none'; connect-src 'none'; base-uri 'none'; form-action 'none'">
+<title>Selv-guide til albumudgivelse</title>
+<style>
+:root{
+  --bg:#f6f4ef;--panel:#fffdf9;--ink:#23262b;--muted:#5d636b;--line:#ddd8cd;
+  --accent:#17605c;--accent-ink:#ffffff;--soft:#e4efec;
+  --yellow-bg:#fdf3cd;--yellow-ink:#5e4800;--yellow-line:#d9b84a;
+  --red-bg:#fbe3df;--red-ink:#7a1f13;--red-line:#cf6a5a;
+  --stop-bg:#fbeee2;--stop-ink:#6d3a0c;--stop-line:#d99a5b;
+  --ok:#22704a;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#191b1e;--panel:#22252a;--ink:#ecebe6;--muted:#a9aeb5;--line:#3a3e45;
+  --accent:#5cc0b6;--accent-ink:#10201e;--soft:#23403c;
+  --yellow-bg:#40350f;--yellow-ink:#f5e2a0;--yellow-line:#8a7320;
+  --red-bg:#47201b;--red-ink:#f8c9c1;--red-line:#a44a3c;
+  --stop-bg:#3f2c1a;--stop-ink:#f4d5b4;--stop-line:#94622f;
+  --ok:#6fd09f;
+}}
+*{box-sizing:border-box}
+html{font-size:18px}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;line-height:1.55}
+a{color:var(--accent)}
+h1,h2,h3{line-height:1.25;margin:0}
+.wrap{max-width:1120px;margin:0 auto;padding:0 16px}
+.draft{background:var(--yellow-bg);color:var(--yellow-ink);border-bottom:1px solid var(--yellow-line);font-size:.83rem;padding:8px 0}
+.draft .wrap{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center}
+.draft button{font:inherit;background:transparent;color:inherit;border:1px solid var(--yellow-line);border-radius:6px;padding:1px 9px;cursor:pointer}
+.draft button[aria-pressed="true"]{background:var(--yellow-ink);color:var(--yellow-bg);border-color:var(--yellow-ink)}
+header.top{background:var(--panel);border-bottom:1px solid var(--line);padding:20px 0}
+header.top h1{font-size:1.55rem}
+.dates{display:flex;flex-wrap:wrap;gap:4px 18px;color:var(--muted);font-size:.86rem;margin-top:6px}
+.dates strong{color:var(--ink);font-weight:600}
+.notice{border:1px solid;border-radius:8px;padding:11px 14px;margin:14px 0 0}
+.notice.yellow{background:var(--yellow-bg);color:var(--yellow-ink);border-color:var(--yellow-line)}
+.notice.red{background:var(--red-bg);color:var(--red-ink);border-color:var(--red-line)}
+[hidden]{display:none!important}
+.progress{display:flex;align-items:center;gap:12px;margin-top:14px;font-size:.86rem;color:var(--muted)}
+.bar{flex:1;height:8px;background:var(--line);border-radius:4px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--accent);width:0}
+main.layout{display:grid;grid-template-columns:290px minmax(0,1fr);gap:24px;padding-top:22px;padding-bottom:40px}
+nav.steps{align-self:start;position:sticky;top:12px;max-height:calc(100vh - 24px);overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px}
+.navtoggle{display:none;width:100%;font:inherit;font-weight:600;padding:10px 12px;background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:8px;margin-bottom:10px;cursor:pointer;text-align:left}
+.blockname{display:block;width:100%;text-align:left;font:inherit;font-size:.78rem;font-weight:700;line-height:1.3;color:var(--ink);background:transparent;border:0;border-radius:6px;padding:7px 6px;margin-top:3px;cursor:pointer}
+.blockname:hover{background:var(--soft)}
+.blockname .arrow{display:inline-block;width:1em;color:var(--muted)}
+.blocktime{display:block;font-weight:400;color:var(--muted);padding-left:1em}
+.stepbtn{display:flex;gap:8px;width:100%;text-align:left;font:inherit;font-size:.86rem;line-height:1.3;background:transparent;color:var(--ink);border:0;border-radius:6px;padding:6px;cursor:pointer}
+.stepbtn:hover{background:var(--soft)}
+.stepbtn[aria-current="step"]{background:var(--accent);color:var(--accent-ink)}
+.stepbtn .mark{flex:none;width:1.1em}
+.stepbtn.done .mark{color:var(--ok)}
+.stepbtn[aria-current="step"].done .mark{color:inherit}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:24px}
+.kicker{color:var(--muted);font-size:.86rem;font-weight:600}
+.card h2{font-size:1.4rem;margin:3px 0 10px}
+.pills{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 14px}
+.pill{display:inline-block;font-size:.73rem;font-weight:600;border-radius:99px;padding:1px 10px;background:var(--soft);color:var(--ink);white-space:nowrap;vertical-align:1px}
+.pill.login{background:var(--accent);color:var(--accent-ink)}
+.pill.temp{background:var(--stop-bg);color:var(--stop-ink);border:1px solid var(--stop-line)}
+.pill.wait{background:var(--yellow-bg);color:var(--yellow-ink);border:1px solid var(--yellow-line)}
+.blockintro{background:var(--soft);border-radius:8px;padding:12px 14px;margin:0 0 16px}
+.blockintro h3{font-size:1rem;margin-bottom:5px}
+.blockintro p{margin:6px 0}
+.box{border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:8px;padding:13px 15px;margin:0 0 18px}
+.box h3{font-size:1rem;margin-bottom:7px}
+.box dl{display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 14px;margin:0}
+.box dt{font-weight:600;font-size:.9rem}
+.box dd{margin:0;font-size:.95rem}
+.field{margin:0 0 15px}
+.field h3{font-size:.95rem;margin-bottom:2px}
+.field p{margin:0}
+.field.do{font-size:1.04rem}
+.field.alert{background:var(--stop-bg);color:var(--stop-ink);border:1px solid var(--stop-line);border-radius:8px;padding:10px 13px}
+.field.alert a{color:inherit}
+.stoptxt{font-weight:700;color:var(--red-ink);background:var(--red-bg);border-radius:4px;padding:0 4px}
+.logins{display:flex;flex-wrap:wrap;gap:8px;margin-top:7px}
+.loginbtn{display:inline-block;font-weight:600;font-size:.92rem;text-decoration:none;border:1px solid var(--accent);color:var(--accent);border-radius:8px;padding:6px 12px}
+.loginbtn:hover{background:var(--soft)}
+.sidebyside{margin-top:8px;font-size:.9rem}
+.sidebyside summary{cursor:pointer;color:var(--accent);font-weight:600}
+.sidebyside p{margin:6px 0}
+.finish{margin-top:16px;padding:12px 14px;border-radius:8px;background:var(--soft)}
+.finish h3{font-size:1rem;margin-bottom:4px}
+.finish p{margin:4px 0}
+.meta{border-top:1px solid var(--line);margin-top:18px;padding-top:12px;font-size:.84rem;color:var(--muted)}
+.meta p{margin:3px 0}
+.actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-top:18px;position:sticky;bottom:0;z-index:2;background:var(--panel);border-top:1px solid var(--line);padding:10px 0}
+.check{display:flex;gap:9px;align-items:center;font-weight:600;cursor:pointer}
+.check input,.choice input{width:1.15em;height:1.15em;accent-color:var(--accent)}
+.btn{font:inherit;font-weight:600;border-radius:8px;padding:9px 18px;cursor:pointer;border:1px solid var(--accent);background:var(--accent);color:var(--accent-ink)}
+.btn.ghost{background:transparent;color:var(--accent)}
+.btn[disabled]{opacity:.4;cursor:default}
+.btnrow{display:flex;gap:9px}
+.help{margin-top:14px;font-size:.88rem;color:var(--muted)}
+.choice{display:flex;gap:10px;align-items:center;padding:9px 12px;border:1px solid var(--line);border-radius:8px;margin:7px 0;cursor:pointer}
+.choice:has(input:checked){border-color:var(--accent);background:var(--soft)}
+.num{display:block;margin:12px 0;font-weight:600}
+.num input{display:block;font:inherit;width:7em;margin-top:4px;padding:6px 9px;border:1px solid var(--muted);border-radius:6px;background:var(--bg);color:var(--ink)}
+.routesum{margin:14px 0 0;padding:12px 14px;background:var(--soft);border-radius:8px}
+.routesum ul{margin:6px 0 0;padding-left:1.1em}
+.msg{margin-top:12px;padding:10px 13px;border-radius:8px;background:var(--red-bg);color:var(--red-ink);border:1px solid var(--red-line);font-weight:600}
+.intro{margin-bottom:18px}
+.intro details{border:1px solid var(--line);border-radius:8px;padding:9px 13px;margin-top:9px}
+.intro summary{font-weight:600;cursor:pointer}
+.intro ul{margin:7px 0;padding-left:1.15em}
+.intro p{margin:7px 0}
+.gloss dt{font-weight:600;margin-top:7px}
+.gloss dd{margin:0}
+footer{border-top:1px solid var(--line);padding:18px 0 34px;font-size:.84rem;color:var(--muted)}
+footer p{margin:4px 0}
+footer button{font:inherit;background:none;border:0;padding:0;color:var(--accent);text-decoration:underline;cursor:pointer}
+button:focus-visible,a:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+@media (max-width:820px){
+  html{font-size:17px}
+  main.layout{grid-template-columns:minmax(0,1fr);gap:0;padding-top:14px}
+  nav.steps{position:static;max-height:none;display:none;margin-bottom:12px}
+  nav.steps.open{display:block}
+  .navtoggle{display:block}
+  .card{padding:17px}
+  .box dl{grid-template-columns:minmax(0,1fr);gap:0}
+  .box dd{margin-bottom:6px}
+  .actions .btnrow{width:100%}
+  .actions .btnrow .btn{flex:1}
+}
+@media print{
+  .draft,nav.steps,.navtoggle,.actions,footer button{display:none!important}
+  main.layout{display:block}
+  body{background:#fff}
+}
+</style>
+</head>
+<body>
+<noscript><p style="padding:16px;background:#fbe3df;color:#7a1f13;font-weight:600">Denne visning kan ikke køre guiden. Åbn siden i en almindelig browser, fx Chrome eller Safari.</p></noscript>
+<div class="draft"><div class="wrap">
+  <strong>KLADDE: Må ikke bruges til en rigtig upload.</strong>
+  <span>Prøv datoadvarslen:</span>
+  <button type="button" data-demo="0" aria-pressed="true">Aktuel</button>
+  <button type="button" data-demo="1" aria-pressed="false">Gul</button>
+  <button type="button" data-demo="2" aria-pressed="false">Rød</button>
+</div></div>
+<header class="top"><div class="wrap">
+  <h1>Sådan udgiver du dit album</h1>
+  <div class="dates" id="dates"></div>
+  <div id="warn"></div>
+  <div class="progress" id="progressRow" hidden><div class="bar"><i id="bar"></i></div><span id="progressTxt"></span></div>
+</div></header>
+<main class="wrap layout">
+  <div>
+    <button type="button" class="navtoggle" id="navtoggle" aria-expanded="false">Vis alle trin</button>
+    <nav class="steps" id="nav" aria-label="Trin i guiden"></nav>
+  </div>
+  <div>
+    <section class="intro" id="intro"></section>
+    <article class="card" id="card"></article>
+    <p class="help" id="help"></p>
+  </div>
+</main>
+<footer><div class="wrap">
+  <p>Guiden er vejledning, ikke juridisk rådgivning.</p>
+  <p>NG-N beder aldrig om dine adgangskoder. Du logger altid selv ind.</p>
+  <p>Dine kryds gemmes kun i din egen browser på denne computer. <span id="resetArea"><button type="button" id="reset">Start forfra</button></span></p>
+</div></footer>
+<script>
+const DATA = {"logins": [{"name": "Suno", "match": "Suno", "url": "https://suno.com/"}, {"name": "DistroKid", "match": "DistroKid", "url": "https://distrokid.com/signin/"}, {"name": "Koda", "match": "Koda", "url": "https://koda.dk/"}, {"name": "Gramex", "match": "Gramex", "url": "https://gramex.dk/"}, {"name": "Spotify for Artists", "match": "Spotify", "url": "https://artists.spotify.com/"}], "version": "0.2 (kladde)", "versionsdato": "4. november 2026", "reglerTekst": "Ikke tjekket endnu", "reglerISO": null, "kortFortalt": "Guiden fører dig fra dine færdige sange i Suno til et album på Spotify, Apple Music og de andre tjenester. Guiden er delt i blokke. De fleste blokke tager højst ca. 2 timer inkl. pauser på 10–15 minutter. Blok C skal klares i én omgang og kan tage længere tid, hvis du har mange sange. Siden viser tiden for dine sange. Trin, der afhænger af antal sange, deles i runder à 5 sange.", "klar": ["En computer (ikke kun telefonen)", "Dine egne logins til Suno, DistroKid, Spotify, Koda og Gramex", "Dine sangtekster", "Et coverbillede", "Tid til at lytte alle sange igennem"], "galt": "Stop, og kontakt NG-N, før du trykker \"send\".", "hjaelp": "**[Midlertidig]** Du har 30 dages support på spørgsmål om guiden. Derefter koster hjælp 300 kr. i timen. Er du i tvivl, så kontakt NG-N.", "ordliste": [["Credits", "Oplysninger om, hvem der har lavet hvad på en sang, fx tekstforfatter og producer."], ["AI Credits", "DistroKids felt, hvor du oplyser, hvilke dele af en sang der er lavet med AI."], ["Performer-credit", "Oplysning om, hvem der optræder på optagelsen. Apple Music kræver den."], ["ISRC (International Standard Recording Code)", "Optagelsens unikke id."], ["Koda", "Forvalter rettigheder for komponister og tekstforfattere."], ["Koda OU", "Det navn, en AI-genereret del af en sang registreres til hos Koda."], ["Gramex", "Forvalter rettigheder for udøvende kunstnere og pladeselskaber ved radio, tv og offentlig afspilning."], ["Spotify for Artists", "Spotifys værktøj, hvor du redigerer din kunstnerprofil."], ["Upload", "At sende dine sange og oplysninger ind til DistroKid."]], "blocks": [{"id": "start", "short": "Før du starter", "title": "Før du starter", "intro": [], "steps": [{"id": "0", "title": "Tjek datoen, og vælg, hvad du skal", "box": {"Forventet tid": "5 minutter", "Én omgang": "Ja", "Logins": "Ingen", "Hav klar": "Antal sange på albummet og antal tidligere udgivelser med forkerte credits"}, "fields": {"Hvad du skal gøre": "Se datoen \"Regler sidst tjekket\" øverst. Er den ældre end 1 måned, vises en gul advarsel: \"Reglerne ændrer sig ofte. Kontakt NG-N, hvis du er i tvivl.\" Er den ældre end 3 måneder, vises en rød advarsel: \"Kontakt NG-N, før du uploader.\" Står der \"Ikke tjekket endnu\", vises en rød advarsel: \"Reglerne er ikke tjekket endnu. Kontakt NG-N, før du uploader.\" Sæt derefter kryds ved det, du skal (se \"Hvad skal du?\"). Skal du udgive noget nyt, så skriv antal sange, så beregner siden tiden for hvert trin og hver blok. **[Opbygningsfase]** Skriv også antal tidligere udgivelser med forkerte credits, så siden kan beregne tiden for forløbet \"Ret credits\".", "Hvorfor": "Reglerne for AI-musik ændrer sig hurtigt, og tiden afhænger af, hvor mange sange albummet har."}, "login": false, "kildeLabel": "Kilde", "kilde": "NG-N's anbefaling", "tjekket": "4. november 2026"}]}, {"id": "A", "short": "Blok A: Suno", "title": "Blok A – Suno (én omgang)", "intro": [], "steps": [{"id": "1", "title": "Tjek dit Suno-abonnement", "box": {"Forventet tid": "10 minutter", "Én omgang": "Ja, sammen med resten af blok A", "Logins": "Suno", "Hav klar": "Dine kvitteringer for abonnementet, hvis du har dem"}, "fields": {"Hvad du skal gøre": "Kontrollér, at du har et betalt abonnement (Pro eller Premier), mens du downloader sangene.", "Hvorfor": "Kun sange, der er downloadet med betalt abonnement, må udgives kommercielt."}, "login": true, "kildeLabel": "Kilde (offentlig)", "kilde": "[Suno-hjælp: kommerciel brug](https://help.suno.com/en/articles/2425729)", "tjekket": "–", "afventer": true, "skelet": false}, {"id": "2", "title": "Download sangene fra Suno", "box": {"Forventet tid": "10 minutter + 3 minutter pr. sang, i runder à 5 sange", "Én omgang": "Ja, sammen med resten af blok A", "Logins": "Suno", "Hav klar": "En mappe på computeren til sangene og listen over sange"}, "fields": {"Hvad du skal gøre": "Download hver sang i den kvalitet, DistroKid kræver.", "Hvorfor": "Downloadet skal ske med betalt abonnement, og der er et loft over antal downloads pr. måned."}, "login": true, "kildeLabel": "Kilde (offentlig)", "kilde": "[Suno: Blog om nye vilkår](https://suno.com/blog/suno-updates-tos)", "tjekket": "–", "afventer": true, "skelet": false}, {"id": "3", "title": "Gem din dokumentation", "box": {"Forventet tid": "10 minutter + 2 minutter pr. sang, i runder à 5 sange", "Én omgang": "Ja, sammen med resten af blok A", "Logins": "Suno", "Hav klar": "Kvitteringer og dine tekstudkast med datoer"}, "fields": {"Hvad du skal gøre": "Gem kvitteringer for abonnementet og et skærmbillede af plan og downloaddato for hver sang. Gem også dine tekstudkast med datoer.", "Hvorfor": "Dokumentationen viser, at du har ret til at udgive musikken."}, "login": true, "kildeLabel": "Kilde (offentlig)", "kilde": "[Suno-hjælp: Rights & Ownership](https://help.suno.com/en/categories/550145-rights-ownership)", "tjekket": "–", "afventer": false, "skelet": true}]}, {"id": "B", "short": "Blok B: Forberedelse", "title": "Blok B – Forberedelse uden login (kan deles over flere dage)", "intro": [], "steps": [{"id": "4", "title": "Lyt sangene igennem", "box": {"Forventet tid": "6 minutter pr. sang, i runder à 5 sange", "Én omgang": "Nej, tag én runde ad gangen", "Logins": "Ingen", "Hav klar": "De downloadede sange og dine sangtekster"}, "fields": {"Hvad du skal gøre": "Lyt hver sang igennem, og tjek, at sungen tekst og skrevet tekst passer sammen. Tjek også, at ingen sang lyder som en kendt kunstner eller et kendt nummer.", "Hvorfor": "Suno kan udelade vers, og lighed med kendte numre kan give problemer."}, "login": false, "kildeLabel": "Kilde", "kilde": "NG-N's anbefaling", "tjekket": "–", "afventer": false, "skelet": true}, {"id": "5", "title": "Gør titler, rækkefølge og cover klar", "box": {"Forventet tid": "30 minutter. Coveret kan kræve ventetid, hvis en anden laver det", "Én omgang": "Nej", "Logins": "Ingen", "Hav klar": "Listen over sange og dit coverbillede"}, "fields": {"Hvad du skal gøre": "Skriv titlerne præcist, som de skal stå. Bestem rækkefølgen. Lav et cover i den størrelse, DistroKid kræver.", "Hvorfor": "Titler med ekstra tekst eller parenteser kan blive afvist."}, "login": false, "kildeLabel": "Kilde (offentlig)", "kilde": "[DistroKid: Release and Track Title Formatting Issues](https://support.distrokid.com/hc/en-us/articles/360033900034-Release-and-Track-Title-Formatting-Issues)", "tjekket": "–", "afventer": true, "skelet": false}]}, {"id": "C", "short": "Blok C: Upload i DistroKid", "title": "Blok C – Upload i DistroKid (én omgang, afbryd ikke)", "intro": ["**Blok C er ét langt forløb:** Med dit antal sange tager den omkring [beregnet tid] plus pauser, og den skal klares i én omgang. Sæt tiden af, før du går i gang. Luk ikke fanen med DistroKid, før du har sendt udgivelsen i trin 10.", "**[Opbygningsfase] Før du starter:** Har du ikke fået besked om performer-credit fra NG-N, så kontakt NG-N, før du starter blok C. Ellers kan du gå i stå ved trin 8, hvor du skal bruge det svar."], "steps": [{"id": "6", "title": "Start upload i DistroKid: albumoplysninger", "box": {"Forventet tid": "15 minutter + 3 minutter pr. sang, i runder à 5 sange", "Én omgang": "Ja, sammen med resten af blok C. Afbryd ikke", "Logins": "DistroKid", "Hav klar": "Sangfiler, cover, titler og rækkefølge"}, "fields": {"Hvad du skal gøre": "Opret en ny udgivelse, og udfyld albumtitel, kunstnernavn, sangtitler og rækkefølge.", "Hvorfor": "Oplysningerne følger albummet ud til alle tjenester."}, "login": true, "kildeLabel": "Kilde (offentlig)", "kilde": "[DistroKid: Entering Track Information on the Upload Form](https://support.distrokid.com/hc/en-us/articles/39974262480019-Entering-Track-Information-on-the-Upload-Form)", "tjekket": "–", "afventer": true, "skelet": false}, {"id": "7", "title": "Udfyld AI Credits", "box": {"Forventet tid": "5 minutter + 1 minut pr. sang, i runder à 5 sange", "Én omgang": "Ja, sammen med resten af blok C. Afbryd ikke", "Logins": "DistroKid", "Hav klar": "Viden om, hvad der er lavet med AI i hver sang"}, "fields": {"Læg mærke til spørgsmålet": "DistroKid spørger under upload, om noget af nummeret er AI-genereret. Spørgsmålet stilles kun ved nye uploads, så det retter ikke dine tidligere udgivelser. Dem tager du for sig i forløbet \"Ret credits\". Er du helt ny på DistroKid, så aftal evt. med NG-N, at I tager trinet sammen. Du logger altid selv ind.", "Hvad du skal gøre": "Svar ja til, at noget af nummeret er AI-genereret. Vælg \"The music\" og \"All of the audio\". Sæt ikke kryds ved \"The lyrics\". Angiv, at kunstnernavnet er et menneske og ikke en \"AI persona\".", "Har du selv sunget eller spillet": "Vælg \"Part of the audio\" i stedet for \"All of the audio\" på de sange, hvor du selv har sunget eller spillet. Er du i tvivl, så kontakt NG-N.", "Har AI skrevet dele af teksten": "Stop, og kontakt NG-N.", "Hvorfor": "Det er et krav, og oplysningen sendes videre til Spotify og Apple Music."}, "login": true, "kildeLabel": "Kilde (offentlig)", "kilde": "[DistroKid: How to Fill Out AI Credits](https://support.distrokid.com/hc/en-us/articles/50784709021971-How-to-Fill-Out-AI-Credits)", "tjekket": "–", "afventer": true, "skelet": false}, {"id": "8", "title": "Udfyld credits og Apples krav", "box": {"Forventet tid": "10 minutter + 2 minutter pr. sang, i runder à 5 sange", "Én omgang": "Ja, sammen med resten af blok C. Afbryd ikke", "Logins": "DistroKid", "Hav klar": "Navne på tekstforfatter og producer for hver sang", "Vær forberedt": "**[Opbygningsfase]** Ved performer-credit kan du blive nødt til at stoppe og kontakte NG-N, og der kan gå tid, før du kan fortsætte. Det er endnu ikke afklaret, om DistroKid gemmer det, du har udfyldt."}, "fields": {"Hvad du skal gøre": "Angiv dine roller ærligt, fx tekstforfatter og producer. Når du når til performer-credit under \"Apple Music Additional Requirements\": Stop her, og kontakt NG-N.", "Hvorfor": "Forkerte credits kan skade din troværdighed og føre til fjernelse."}, "login": true, "kildeLabel": "Kilde (offentlig)", "kilde": "[DistroKid: Understanding the Upload Form](https://support.distrokid.com/hc/en-us/articles/4407879306643-Understanding-the-Upload-Form) og [DistroKid: Adding Producer and Songwriter Credits](https://support.distrokid.com/hc/en-us/articles/360013533774-Adding-Producer-and-Songwriter-Credits-or-Liner-Notes-to-Your-Songs)", "tjekket": "–", "afventer": true, "skelet": false}, {"id": "9", "title": "Vælg streamingtjenester og udgivelsesdato", "box": {"Forventet tid": "10 minutter", "Én omgang": "Ja, sammen med resten af blok C. Afbryd ikke", "Logins": "DistroKid", "Hav klar": "Din kalender"}, "fields": {"Hvad du skal gøre": "Vælg de tjenester, albummet skal ud på, herunder YouSee Musik, hvis den kan vælges. Vælg en udgivelsesdato mindst 2 uger frem, så der er tid til blok D. Retter du også credits på tidligere udgivelser, skal der også være tid til det før udgivelsesdagen.", "Hvorfor": "Albummet kommer kun ud på de tjenester, du vælger, og blok D skal være klaret før udgivelsesdagen."}, "login": true, "kildeLabel": "Kilde (offentlig)", "kilde": "[DistroKid: Which Services and Stores](https://support.distrokid.com/hc/en-us/articles/360013649093)", "tjekket": "–", "afventer": true, "skelet": false}, {"id": "10", "title": "Send til udgivelse, og gem kvitteringen", "box": {"Forventet tid": "15 minutter", "Én omgang": "Ja, sammen med resten af blok C. Afbryd ikke", "Logins": "DistroKid", "Hav klar": "En mappe til skærmbilleder"}, "fields": {"Hvad du skal gøre": "Gennemgå alt én gang til, og send udgivelsen. Tag skærmbilleder af dine valg og af vilkårene, du accepterer.", "Hvorfor": "Så kan du dokumentere, hvad du valgte, og hvilke regler der gjaldt den dag."}, "login": true, "kildeLabel": "Kilde", "kilde": "NG-N's anbefaling", "tjekket": "–", "afventer": false, "skelet": true}]}, {"id": "D", "short": "Blok D: Ventetid", "title": "Blok D – Ventetid før udgivelsesdagen", "intro": ["**Vær forberedt på tiden:** Med dit antal sange tager blok D omkring [beregnet tid] plus pauser. Du kan dele den i runder à 5 sange, men den skal være klaret før udgivelsesdagen."], "steps": [{"id": "11", "title": "Registrér sangene hos Koda", "box": {"Forventet tid": "10 minutter + 5 minutter pr. sang, i runder à 5 sange", "Én omgang": "Nej, tag én runde ad gangen", "Logins": "Koda", "Hav klar": "Titler og tekster på alle sange"}, "fields": {"Hvad du skal gøre": "Gør det i ventetiden efter upload og før udgivelsesdagen. Registrér hver sang med teksten i dit navn og musikdelen til \"Koda OU\" (IPI 1210554306).", "Hvorfor": "Så kan du få betaling for teksterne, når sangene spilles."}, "login": true, "kildeLabel": "Kilde (offentlig)", "kilde": "[Koda: Registrering af musik med brug af AI](https://koda.dk/viden-og-hjaelp/mit-koda-din-selvbetjening/registrer-din-musik/registrering-af-musik-med-brug-af-ai)", "tjekket": "–", "afventer": true, "skelet": false}, {"id": "12", "title": "Anmeld optagelserne til Gramex", "box": {"Forventet tid": "10 minutter + 2 minutter pr. sang, i runder à 5 sange", "Én omgang": "Nej, tag én runde ad gangen", "Logins": "Gramex og DistroKid (til ISRC-koderne)", "Hav klar": "ISRC-koder (International Standard Recording Code, optagelsens unikke id) fra DistroKid"}, "fields": {"Hvad du skal gøre": "Gør det, når optagelserne har fået ISRC-koder fra DistroKid. Anmeld dig som producent (selvudgiver), ikke som udøvende musiker.", "Hvorfor": "Producenter kan få andel af betalingen ved radiospil."}, "login": true, "kildeLabel": "Kilde (offentlig)", "kilde": "[Gramex FAQ](https://gramex.dk/om-gramex/faq/)", "tjekket": "–", "afventer": true, "skelet": false}]}, {"id": "cred", "short": "Ret credits", "title": "Ret credits (eget forløb)", "intro": ["Dette er en opgave for sig, og den kan klares uden en ny udgivelse. Laver du også en ny udgivelse, skal forløbet være færdigt før udgivelsesdagen. Trin 13a–c tager tilsammen ca. 30 minutter pr. tidligere udgivelse.", "**[Opbygningsfase] Før du starter:** Har du ikke fået besked om performer-credit fra NG-N, så kontakt NG-N, før du retter credits."], "steps": [{"id": "13a", "title": "Ret forkerte credits", "box": {"Forventet tid": "Del af de ca. 30 minutter pr. tidligere udgivelse", "Én omgang": "Nej, tag én udgivelse ad gangen", "Logins": "DistroKid", "Hav klar": "Listen over dine tidligere udgivelser og dine ærlige roller på hver af dem"}, "fields": {"Hvad du skal gøre": "Skal gøres, hvis dine tidligere udgivelser har forkerte credits. Gå til distrokid.com/credits, og ret de forkerte credits.", "Hvorfor": "Forkerte credits kan skade din troværdighed og føre til fjernelse."}, "login": true, "kildeLabel": "Kilde (offentlig)", "kilde": "[DistroKid: Adding Producer and Songwriter Credits](https://support.distrokid.com/hc/en-us/articles/360013533774-Adding-Producer-and-Songwriter-Credits-or-Liner-Notes-to-Your-Songs)", "tjekket": "–", "afventer": true, "skelet": false}, {"id": "13b", "title": "Tilføj AI Credits på tidligere udgivelser", "box": {"Forventet tid": "Del af de ca. 30 minutter pr. tidligere udgivelse", "Én omgang": "Nej, tag én udgivelse ad gangen", "Logins": "DistroKid", "Hav klar": "Viden om, hvad der er lavet med AI på hver udgivelse"}, "fields": {"Hvad du skal gøre": "Tilføj AI Credits via albumsiden (\"Credits\") eller distrokid.com/credits. Svar ja til, at noget af nummeret er AI-genereret. Vælg \"The music\" og \"All of the audio\". Sæt ikke kryds ved \"The lyrics\". Spørger DistroKid om kunstnernavnet, så angiv, at det er et menneske og ikke en \"AI persona\".", "Har du selv sunget eller spillet": "Vælg \"Part of the audio\" i stedet for \"All of the audio\" på de sange, hvor du selv har sunget eller spillet.", "Har AI skrevet dele af teksten": "Stop, og kontakt NG-N.", "Hvorfor": "DistroKid spørger kun automatisk ved nye uploads. Det er billigere at rette frivilligt nu end at blive tvunget til det senere."}, "login": true, "kildeLabel": "Kilde (offentlig)", "kilde": "[DistroKid: How to Fill Out AI Credits](https://support.distrokid.com/hc/en-us/articles/50784709021971-How-to-Fill-Out-AI-Credits)", "tjekket": "–", "afventer": true, "skelet": false}, {"id": "13c", "title": "Valgfrit: Tilføj flere streamingtjenester", "box": {"Forventet tid": "Del af de ca. 30 minutter pr. tidligere udgivelse", "Én omgang": "Nej", "Logins": "DistroKid", "Hav klar": "Listen over de tjenester, du vil have med"}, "fields": {"Hvad du skal gøre": "Gå til albumsiden, vælg \"Stores\" og derefter \"Add to more stores\".", "Hvorfor": "En udgivelse kommer kun ud på de tjenester, du har valgt."}, "login": true, "kildeLabel": "Kilde (offentlig)", "kilde": "[DistroKid: Adding Previously Uploaded Music to New Streaming Services](https://support.distrokid.com/hc/en-us/articles/360013535034-Adding-Previously-Uploaded-Music-to-New-Streaming-Services)", "tjekket": "–", "afventer": true, "skelet": false}]}, {"id": "E", "short": "Blok E: Efter udgivelsesdagen", "title": "Blok E – Efter udgivelsesdagen", "intro": [], "steps": [{"id": "14", "title": "Tjek, at albummet er live", "box": {"Forventet tid": "10 minutter", "Én omgang": "Nej", "Logins": "Ingen", "Hav klar": "Albumtitel og kunstnernavn"}, "fields": {"Hvad du skal gøre": "Søg efter albummet på Spotify, Apple Music og de øvrige tjenester efter udgivelsesdagen.", "Hvorfor": "Det kan tage tid, og der kan opstå fejl, som skal rettes."}, "login": false, "kildeLabel": "Kilde", "kilde": "NG-N's anbefaling", "tjekket": "–", "afventer": false, "skelet": true}, {"id": "15", "title": "Spotify for Artists: profil og bio", "box": {"Forventet tid": "30 minutter", "Én omgang": "Nej", "Logins": "DistroKid og Spotify", "Hav klar": "Din bio og ægte fotos"}, "fields": {"Hvad du skal gøre": "Få adgang til din kunstnerprofil via DistroKid, og tilføj bio og ægte fotos.", "Hvorfor": "Profilen viser lytterne, hvem du er. Fotorealistiske AI-billeder kan få Spotify til at mærke profilen som AI."}, "login": true, "kildeLabel": "Kilde (offentlig)", "kilde": "[DistroKid: Registering Your Spotify Artist Page](https://support.distrokid.com/hc/en-us/articles/360013535514-Registering-Your-Spotify-Artist-Page) og [Spotify: AI Persona-mærker](https://newsroom.spotify.com/2026-08-11/ai-persona-badges-transparency/)", "tjekket": "–", "afventer": true, "skelet": true}]}]};
+const CONTACT = "Kontaktoplysninger til NG-N indsættes her.";
+
+const TIME = {"0":[5,0],"1":[10,0],"2":[10,3],"3":[10,2],"4":[0,6],"5":[30,0],"6":[15,3],"7":[5,1],"8":[10,2],"9":[10,0],"10":[15,0],"11":[10,5],"12":[10,2],"14":[10,0],"15":[30,0]};
+const CREDIT_MIN = 30;
+
+const store = {
+  read(){ try { return JSON.parse(localStorage.getItem("selvguide") || "null"); } catch(e){ return null; } },
+  write(v){ try { localStorage.setItem("selvguide", JSON.stringify(v)); } catch(e){} },
+  clear(){ try { localStorage.removeItem("selvguide"); } catch(e){} }
+};
+const blank = () => ({ny:false,cred:false,andet:false,n:"",p:"",done:{},cur:"0",started:false});
+function load(){
+  const r = store.read(), b = blank();
+  if (!r || typeof r !== "object" || Array.isArray(r)) return b;
+  for (const k of ["ny","cred","andet","started"]) if (typeof r[k] === "boolean") b[k] = r[k];
+  for (const k of ["n","p","cur"]) if (typeof r[k] === "string") b[k] = r[k];
+  if (r.done && typeof r.done === "object" && !Array.isArray(r.done))
+    for (const [k,v] of Object.entries(r.done)) if (v === true) b.done[k] = true;
+  return b;
+}
+let S = load();
+let demo = 0;
+let openBlock = null;
+let headerDone = false;
+
+const esc = s => String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;");
+const stepById = id => { for (const b of DATA.blocks) for (const s of b.steps) if (s.id === id) return s; return null; };
+
+function md(text){
+  let t = esc(text);
+  t = t.replace(/\[Opbygningsfase\]/g,'<span class="pill temp">Midlertidig</span>')
+       .replace(/\[Midlertidig\]/g,'<span class="pill temp">Midlertidig</span>')
+       .replace(/\[Afventer 2\.0\]/g,'<span class="pill wait">Afventer afklaring</span>');
+  t = t.replace(/\*\*(.+?)\*\*/g,"<strong>$1</strong>");
+  t = t.replace(/\[([^\]]+)\]\((https:[^)]+)\)/g,'<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
+  t = t.replace(/Trin 13a–c tager/g,"De tre trin tager");
+  t = t.replace(/\btrin (\d+[a-c]?)\b/gi,(m,id)=>{ const s = stepById(id); return s ? "trinet “" + esc(s.title) + "”" : m; });
+  t = t.replace(/(^|[\s(])distrokid\.com\/credits\b/g,'$1<a href="https://distrokid.com/credits" target="_blank" rel="noopener noreferrer">distrokid.com/credits</a>');
+  t = t.replace(/Stop her, og kontakt NG-N\.|[Ss]top, og kontakt NG-N\./g,'<span class="stoptxt">$&</span>');
+  return t;
+}
+function dur(min){
+  const m = Math.round(min);
+  if (m < 60) return "ca. " + m + " minutter";
+  const h = Math.floor(m/60), r = m%60;
+  const ht = h + (h === 1 ? " time" : " timer");
+  return "ca. " + ht + (r ? " og " + r + " minutter" : "");
+}
+const num = v => /^\d+$/.test(String(v).trim()) ? parseInt(v,10) : null;
+function stepMin(id){
+  if (/^13/.test(id)) return null;
+  const t = TIME[id], n = num(S.n) || 0;
+  return t[0] + t[1]*n;
+}
+function blockMin(b){
+  if (b.id === "cred") return CREDIT_MIN * (num(S.p) || 0);
+  return b.steps.reduce((a,s)=>a+(stepMin(s.id)||0),0);
+}
+function route(){
+  const out = [DATA.blocks.find(b=>b.id==="start")];
+  if (!S.started || validate()) return out;
+  for (const b of DATA.blocks){
+    if (b.id === "start") continue;
+    if (b.id === "cred" ? S.cred : S.ny) out.push(b);
+  }
+  return out;
+}
+const flat = () => route().flatMap(b=>b.steps.map(s=>({step:s,block:b})));
+
+function validate(){
+  if (S.andet && (S.ny || S.cred)) return {kind:"err",text:"Denne kombination giver ikke mening: Andre moduler er under konstruktion. Fravælg “Andre moduler” for at fortsætte med dine andre valg."};
+  if (S.andet) return {kind:"andet",text:"Andre moduler er under konstruktion. Kontakt NG-N for opdatering."};
+  if (!S.ny && !S.cred) return {kind:"err",text:"Sæt mindst ét kryds."};
+  const n = num(S.n), p = num(S.p);
+  if (S.ny && S.n === "") return {kind:"err",text:"Skriv antal sange."};
+  if (S.ny && n === 0) return {kind:"err",text:"Denne kombination giver ikke mening: Du vil udgive noget nyt, men har skrevet 0 sange. Ret antallet."};
+  if (S.ny && n === null) return {kind:"err",text:"Skriv antal sange som et helt tal på 1 eller mere."};
+  if (S.cred && S.p === "") return {kind:"err",text:"Skriv antal udgivelser, der skal rettes."};
+  if (S.cred && p === 0) return {kind:"err",text:"Denne kombination giver ikke mening: Du vil rette credits, men har skrevet 0 udgivelser. Ret antallet."};
+  if (S.cred && p === null) return {kind:"err",text:"Skriv antal udgivelser som et helt tal på 1 eller mere."};
+  return null;
+}
+function save(){ store.write(S); }
+
+function addMonths(d,m){ const x = new Date(d); x.setMonth(x.getMonth()+m); return x; }
+function renderHeader(){
+  document.getElementById("dates").innerHTML =
+    "<span>Regler sidst tjekket: <strong>"+esc(DATA.reglerTekst)+"</strong></span><span>Version "+esc(DATA.version)+" · "+esc(DATA.versionsdato)+"</span>";
+  const w = document.getElementById("warn");
+  if (!DATA.reglerISO && demo === 0){ w.innerHTML = '<div class="notice red" role="alert"><strong>Reglerne er ikke tjekket endnu. Kontakt NG-N, før du uploader.</strong></div>'; return; }
+  const checked = DATA.reglerISO ? new Date(DATA.reglerISO+"T12:00:00") : new Date();
+  const today = demo === 1 ? addMonths(checked,2) : demo === 2 ? addMonths(checked,4) : new Date();
+  if (today > addMonths(checked,3)) w.innerHTML = '<div class="notice red" role="alert"><strong>Kontakt NG-N, før du uploader.</strong></div>';
+  else if (today > addMonths(checked,1)) w.innerHTML = '<div class="notice yellow" role="status">Reglerne ændrer sig ofte. Kontakt NG-N, hvis du er i tvivl.</div>';
+  else w.innerHTML = "";
+}
+function renderIntro(){
+  const el = document.getElementById("intro");
+  if (S.cur !== "0") { el.innerHTML = ""; return; }
+  el.innerHTML = "<p>"+md(DATA.kortFortalt)+"</p>"
+   + '<details><summary>Det skal du have klar</summary><ul>'+DATA.klar.map(x=>"<li>"+md(x)+"</li>").join("")+'</ul></details>'
+   + '<details><summary>Hvis noget går galt, og hvad hjælp koster</summary><p>'+md(DATA.galt)+'</p><p>'+md(DATA.hjaelp)+'</p><p>'+esc(CONTACT)+'</p></details>'
+   + '<details><summary>Ordforklaringer</summary><dl class="gloss">'+DATA.ordliste.map(o=>"<dt>"+esc(o[0])+"</dt><dd>"+esc(o[1])+"</dd>").join("")+'</dl></details>';
+}
+function renderNav(){
+  const nav = document.getElementById("nav");
+  let i = 0, h = "";
+  for (const b of route()){
+    const mins = (b.id==="start") ? "" : '<span class="blocktime">'+dur(blockMin(b))+"</span>";
+    const here = b.steps.some(s=>s.id===S.cur);
+    const isOpen = openBlock === null ? here : openBlock === b.id;
+    h += '<button type="button" class="blockname" data-block="'+b.id+'" aria-expanded="'+isOpen+'"><span class="arrow">'+(isOpen?"▾":"▸")+"</span>"+esc(b.short)+mins+"</button>";
+    for (const s of b.steps){
+      const label = s.id === "0" ? "Start" : (++i) + ". " + s.title;
+      const d = S.done[s.id];
+      if (!isOpen) continue;
+      h += '<button type="button" class="stepbtn'+(d?" done":"")+'" data-step="'+s.id+'"'+(s.id===S.cur?' aria-current="step"':"")+'><span class="mark">'+(d?"✓":"")+'</span><span>'+esc(label)+"</span></button>";
+    }
+  }
+  nav.innerHTML = h;
+  const f = flat().filter(x=>x.step.id!=="0"), done = f.filter(x=>S.done[x.step.id]).length;
+  const row = document.getElementById("progressRow");
+  row.hidden = !S.started || f.length === 0;
+  if (S.started){
+    document.getElementById("bar").style.width = (f.length ? done/f.length*100 : 0) + "%";
+    document.getElementById("progressTxt").textContent = done + " af " + f.length + " trin færdige";
+  }
+}
+function field(label,text,cls){ return '<div class="field '+(cls||"")+'"><h3>'+esc(label)+"</h3><p>"+md(text)+"</p></div>"; }
+
+function renderStart(step){
+  const v = S.started ? validate() : null;
+  const rs = [];
+  if (S.started && !v){
+    for (const b of route()) if (b.id!=="start") rs.push("<li>"+esc(b.short)+": "+dur(blockMin(b))+"</li>");
+  }
+  const both = S.started && !v && S.ny && S.cred;
+  return '<div class="kicker">Før du starter</div><h2>'+esc(step.title)+'</h2>'
+   + '<div class="pills"><span class="pill">'+dur(TIME["0"][0])+'</span></div>'
+   + box(step, TIME["0"][0])
+   + field("Se datoen","Se datoen “Regler sidst tjekket” øverst på siden. Er den for gammel, viser siden en advarsel.")
+   + field("Hvorfor",step.fields["Hvorfor"])
+   + '<h3 style="font-size:1.05rem;margin:18px 0 3px">Hvad skal du?</h3><p style="margin:0 0 6px;font-size:.92rem;color:var(--muted)">Du kan vælge begge de to første. “Andre moduler” vælges alene.</p>'
+   + choice("ny","Udgive noget nyt",S.ny)
+   + choice("cred","Rette credits på tidligere udgivelser",S.cred)
+   + choice("andet","Andre moduler (under konstruktion)",S.andet)
+   + (!S.ny && !S.cred ? '<p style="margin:8px 0 0;font-size:.92rem;color:var(--muted)">Sæt et kryds, så kommer felterne til antal sange eller udgivelser frem.</p>' : "")
+   + (S.ny ? '<label class="num">Antal sange på albummet<input id="n" type="number" min="0" inputmode="numeric" value="'+esc(String(S.n))+'"></label>' : "")
+   + (S.cred ? '<label class="num">Antal tidligere udgivelser med forkerte credits <span class="pill temp">Midlertidig</span><input id="p" type="number" min="0" inputmode="numeric" value="'+esc(String(S.p))+'"></label>' : "")
+   + '<div style="margin-top:14px"><button type="button" class="btn" id="go">Vis mit forløb</button></div>'
+   + (S.started && v ? '<div class="msg" role="alert">'+esc(v.text)+"</div>" : "")
+   + (rs.length ? '<div class="routesum"><strong>Dit forløb</strong><ul>'+rs.join("")+"</ul>"
+       + (both ? '<p style="margin:8px 0 0"><strong>Ret credits skal være færdig før udgivelsesdagen.</strong></p>' : "")
+       + '<div style="margin-top:12px"><button type="button" class="btn" id="begin">Start første trin →</button></div></div>' : "");
+}
+function choice(k,label,on){ return '<label class="choice"><input type="checkbox" data-choice="'+k+'"'+(on?" checked":"")+"><span>"+esc(label)+"</span></label>"; }
+function box(step,minOverride){
+  const b = step.box, n = num(S.n) || 0;
+  let timeTxt;
+  if (/^13/.test(step.id)) timeTxt = "Trin 13-delene tager tilsammen " + dur(CREDIT_MIN) + " pr. udgivelse";
+  else {
+    timeTxt = dur(minOverride != null ? minOverride : stepMin(step.id));
+    const t = TIME[step.id];
+    if (t && t[1] && n) timeTxt += " · " + Math.ceil(n/5) + (Math.ceil(n/5)===1?" runde":" runder") + " à 5 sange";
+  }
+  timeTxt = timeTxt.replace("Trin 13-delene tager tilsammen","De tre trin i “Ret credits” tager tilsammen");
+  const rows = [["Forventet tid",esc(timeTxt)]];
+  for (const k of ["Én omgang","Logins","Hav klar"]) if (b[k]) rows.push([k, k === "Logins" ? md(b[k]) + loginButtons(b[k]) : md(b[k])]);
+  let extra = "";
+  if (b["Vær forberedt"]) extra = '<div class="field alert" style="margin:11px 0 0"><h3>Vær forberedt</h3><p>'+md(b["Vær forberedt"])+"</p></div>";
+  return '<div class="box"><h3>Det går du ind til</h3><dl>'+rows.map(r=>"<dt>"+r[0]+"</dt><dd>"+r[1]+"</dd>").join("")+"</dl>"+extra+"</div>";
+}
+function loginButtons(text){
+  const found = DATA.logins.filter(p => text.includes(p.match));
+  if (!found.length) return "";
+  const btns = found.map(p => '<a class="loginbtn" href="'+esc(p.url)+'" target="_blank" rel="noopener noreferrer">Åbn '+esc(p.name)+' i en ny fane ↗</a>').join(" ");
+  return '<div class="logins">'+btns+'</div>'
+    + '<details class="sidebyside"><summary>Sådan ser du guiden og '+esc(found.map(p=>p.name).join(" og "))+' side om side</summary>'
+    + '<p>Træk den nye fane ud, så den bliver sit eget vindue. Stil guiden i venstre side af skærmen og platformen i højre side.</p>'
+    + '<p><strong>Mac:</strong> Hold markøren over den grønne knap øverst i vinduet, og vælg venstre eller højre side.<br><strong>Windows:</strong> Tryk på Windows-tasten og venstre eller højre pil.</p>'
+    + '<p>Du logger altid selv ind. Tjek, at adressen øverst i browseren er den rigtige, før du skriver din adgangskode.</p></details>';
+}
+function finishText(){
+  const miss = flat().filter(x=>x.step.id!=="0" && !/^Valgfrit:/.test(x.step.title) && !S.done[x.step.id]).length;
+  return "Tjek i menuen, at alle trin har et ✓." + (miss ? " Du mangler " + miss + " trin. Gå tilbage til " + (miss === 1 ? "det" : "dem") + ", før du slutter." : " Alle trin er markeret som færdige.");
+}
+function renderStep(){
+  const card = document.getElementById("card");
+  const list = flat();
+  const idx = list.findIndex(x=>x.step.id===S.cur);
+  if (idx < 0){ S.cur = "0"; return render(); }
+  const {step,block} = list[idx];
+  if (step.id === "0"){ card.innerHTML = renderStart(step); return; }
+  const real = list.filter(x=>x.step.id!=="0");
+  const pos = real.findIndex(x=>x.step.id===step.id) + 1;
+  const pills = [];
+  if (step.login) pills.push('<span class="pill login">Tjek selv: bag login</span>');
+  if (step.afventer) pills.push('<span class="pill wait">Afventer afklaring</span>');
+  else if (step.skelet) pills.push('<span class="pill wait">Kladde</span>');
+  let first = block.steps[0].id === step.id, introHtml = "";
+  if (first){
+    const repl = dur(blockMin(block));
+    introHtml = '<div class="blockintro"><h3>'+esc(block.title)+' · '+repl+' i alt</h3>'
+      + block.intro.map(p=>"<p>"+md(p.replace("omkring [beregnet tid]",repl))+"</p>").join("") + "<p>Hold pauser på 10–15 minutter undervejs.</p></div>";
+  }
+  const skip = ["Hvorfor","Hvad du skal gøre"];
+  const extras = Object.keys(step.fields).filter(k=>!skip.includes(k));
+  const last = idx === list.length - 1;
+  card.innerHTML =
+    '<div class="kicker">Trin '+pos+" af "+real.length+" · "+esc(block.short)+"</div><h2>"+esc(step.title)+"</h2>"
+    + (pills.length ? '<div class="pills">'+pills.join("")+"</div>" : "")
+    + introHtml + box(step)
+    + extras.filter(k=>k==="Læg mærke til spørgsmålet").map(k=>field(k,step.fields[k])).join("")
+    + field("Det skal du gøre",step.fields["Hvad du skal gøre"],"do")
+    + extras.filter(k=>k!=="Læg mærke til spørgsmålet").map(k=>field(k,step.fields[k],"alert")).join("")
+    + field("Hvorfor",step.fields["Hvorfor"])
+    + '<div class="meta"><p>'+esc(step.kildeLabel)+": "+md(step.kilde)+"</p><p>Sidst tjekket: "+esc(step.tjekket==="–"?"Ikke tjekket endnu":step.tjekket)+"</p></div>"
+    + '<div class="actions"><label class="check"><input type="checkbox" id="doneBox"'+(S.done[step.id]?" checked":"")+'> Færdig</label><div class="btnrow">'
+    + '<button type="button" class="btn ghost" data-go="'+list[idx-1].step.id+'">← Forrige</button>'
+    + (last ? "" : '<button type="button" class="btn" data-go="'+list[idx+1].step.id+'">Næste trin →</button>')
+    + "</div></div>"
+    + (last ? '<div class="finish"><h3>Du er nået til sidste trin.</h3><p id="finishTxt">'+esc(finishText())+'</p><p>Er du i tvivl om noget, så kontakt NG-N.</p></div>' : "");
+}
+function render(){
+  if (!headerDone){ renderHeader(); headerDone = true; }
+  renderIntro(); renderNav(); renderStep();
+  document.getElementById("help").innerHTML = S.cur === "0" ? "" : "Noget galt? Stop, og kontakt NG-N, før du trykker “send”.";
+  save();
+}
+function focusTitle(){
+  const h = document.querySelector("#card h2");
+  if (h){ h.setAttribute("tabindex","-1"); h.focus({preventScroll:true}); }
+}
+function goto(id){
+  S.cur = id; openBlock = null; render();
+  const toggle = document.getElementById("navtoggle");
+  document.getElementById("nav").classList.remove("open");
+  toggle.setAttribute("aria-expanded","false"); toggle.textContent = "Vis alle trin";
+  if (id === "0"){ window.scrollTo(0,0); return focusTitle(); }
+  const y = document.getElementById("card").getBoundingClientRect().top + window.scrollY - 12;
+  window.scrollTo(0,y);
+  focusTitle();
+}
+
+document.addEventListener("click",e=>{
+  const t = e.target.closest("button"); if (!t) return;
+  if (t.dataset.block){
+    const wasOpen = t.getAttribute("aria-expanded") === "true";
+    openBlock = wasOpen ? "" : t.dataset.block;
+    renderNav();
+    const again = document.querySelector('[data-block="'+t.dataset.block+'"]');
+    if (again) again.focus({preventScroll:true});
+    return;
+  }
+  if (t.dataset.step) return goto(t.dataset.step);
+  if (t.dataset.go) return goto(t.dataset.go);
+  if (t.dataset.demo != null){
+    demo = +t.dataset.demo;
+    document.querySelectorAll("[data-demo]").forEach(b=>b.setAttribute("aria-pressed",String(b===t)));
+    return renderHeader();
+  }
+  if (t.id === "go"){
+    S.started = true; render();
+    const f = document.querySelector("#card .routesum, #card .msg");
+    if (f){ f.setAttribute("tabindex","-1"); f.focus(); }
+    return;
+  }
+  if (t.id === "begin"){ const l = flat().filter(x=>x.step.id!=="0"); if (l.length) goto(l[0].step.id); return; }
+  if (t.id === "navtoggle"){ const o = document.getElementById("nav").classList.toggle("open"); t.setAttribute("aria-expanded",String(o)); t.textContent = o ? "Skjul alle trin" : "Vis alle trin"; return; }
+  const area = document.getElementById("resetArea");
+  if (t.id === "reset"){ area.innerHTML = 'Vil du slette dine kryds? <button type="button" id="resetYes">Ja, start forfra</button> · <button type="button" id="resetNo">Nej, behold dem</button>'; document.getElementById("resetNo").focus(); return; }
+  if (t.id === "resetNo"){ area.innerHTML = '<button type="button" id="reset">Start forfra</button>'; document.getElementById("reset").focus(); return; }
+  if (t.id === "resetYes"){ store.clear(); S = blank(); area.innerHTML = '<button type="button" id="reset">Start forfra</button>'; render(); window.scrollTo(0,0); focusTitle(); }
+});
+document.addEventListener("change",e=>{
+  const t = e.target;
+  if (t.dataset && t.dataset.choice){
+    const k = t.dataset.choice;
+    S[k] = t.checked; S.started = false; render();
+    const again = document.querySelector('[data-choice="'+k+'"]');
+    if (again) again.focus();
+    return;
+  }
+  if (t.id === "doneBox"){
+    S.done[S.cur] = t.checked; renderNav(); save();
+    const f = document.getElementById("finishTxt");
+    if (f) f.textContent = finishText();
+  }
+});
+document.addEventListener("input",e=>{
+  const t = e.target;
+  if (t.id === "n" || t.id === "p"){
+    S[t.id] = t.value; S.started = false; save();
+    document.querySelectorAll("#card .routesum, #card .msg").forEach(e=>e.remove());
+    renderNav();
+  }
+});
+render();
+</script>
+</body>
+</html>
